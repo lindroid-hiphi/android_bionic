@@ -182,6 +182,8 @@ int __system_properties_init(void);
 
 // Messages sent to init.
 #define PROP_MSG_SETPROP 1
+#define PROP_MSG_GETPROP 2
+#define PROP_MSG_LISTPROP 3
 #define PROP_MSG_SETPROP2 0x00020001
 
 // Status codes returned by init (but not passed from libc to the caller).
