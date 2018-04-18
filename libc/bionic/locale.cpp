@@ -35,7 +35,8 @@
 #include <time.h>
 #include <wchar.h>
 
-#include "bionic/pthread_internal.h"
+// hybris: disable TLS slot usage to avoid problems with libhybris
+//#include "bionic/pthread_internal.h"
 #include "platform/bionic/macros.h"
 
 // We only support two locales, the "C" locale (also known as "POSIX"),
@@ -74,6 +75,9 @@ size_t __ctype_get_mb_cur_max() {
 }
 
 static pthread_once_t g_locale_once = PTHREAD_ONCE_INIT;
+// hybris: use thread_local instead of bionic TLS slot
+static thread_local locale_t g_current_locale;
+
 static lconv g_locale;
 
 static void __locale_init() {
@@ -167,7 +171,8 @@ char* setlocale(int category, const char* locale_name) {
 }
 
 static locale_t* get_current_locale_ptr() {
-  return &__get_bionic_tls().locale;
+  // hybris: use thread_local instead of bionic TLS slot
+  return &g_current_locale;
 }
 
 locale_t uselocale(locale_t new_locale) {
