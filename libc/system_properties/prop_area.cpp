@@ -83,7 +83,7 @@ prop_area* prop_area::map_prop_area_rw(const char* filename, const char* context
        * property separation.
        */
       if (fsetxattr_failed) {
-        *fsetxattr_failed = true;
+        *fsetxattr_failed = false;
       }
     }
   }
