@@ -200,8 +200,12 @@ __res_vinit(res_state statp, int preinit) {
 	}
 
 	memset(u, 0, sizeof(u));
+// Halium - systemd-resolved is listening at 127.0.0.53
+#define USELOOPBACK
 #ifdef USELOOPBACK
 	u[nserv].sin.sin_addr = inet_makeaddr(IN_LOOPBACKNET, 1);
+	// Ubuntu Touch specific - provided by systemd-resolved
+	u[nserv].sin.sin_addr.s_addr = inet_addr("127.0.0.53");
 #else
 	u[nserv].sin.sin_addr.s_addr = INADDR_ANY;
 #endif
