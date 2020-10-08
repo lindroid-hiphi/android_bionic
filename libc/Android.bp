@@ -1111,6 +1111,7 @@ cc_library_static {
         "stdio/stdio_ext.cpp",
         "stdio/vfscanf.cpp",
         "stdio/vfwscanf.cpp",
+        "hybris_support.c",
     ],
 
     arch: {

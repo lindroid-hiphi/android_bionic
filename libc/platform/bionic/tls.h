@@ -30,25 +30,22 @@
 
 #include <sys/cdefs.h>
 
-#if defined(__aarch64__)
-
-static inline void** __get_tls(void) {
-  void** result;
-  __asm__("mrs %0, tpidr_el0" : "=r"(result));
-  return result;
+#ifdef __cplusplus
+extern "C" {
+#endif
+void** __get_tls(void);
+void** __get_tls_hooks(void);
+#ifdef __cplusplus
 }
+#endif
+
+#if defined(__aarch64__)
 
 static inline void __set_tls(void* tls) {
   __asm__("msr tpidr_el0, %0" : : "r" (tls));
 }
 
 #elif defined(__arm__)
-
-static inline void** __get_tls(void) {
-  void** result;
-  __asm__("mrc p15, 0, %0, c13, c0, 3" : "=r"(result));
-  return result;
-}
 
 // arm32 requires a syscall to set the thread pointer.
 // By historical accident it's public API, but not in any header except this one.
@@ -58,12 +55,6 @@ __END_DECLS
 
 #elif defined(__i386__)
 
-static inline void** __get_tls(void) {
-  void** result;
-  __asm__("movl %%gs:0, %0" : "=r"(result));
-  return result;
-}
-
 // x86 is really hairy, so we keep that out of line.
 __BEGIN_DECLS
 int __set_tls(void* tls);
@@ -71,23 +62,11 @@ __END_DECLS
 
 #elif defined(__riscv)
 
-static inline void** __get_tls(void) {
-  void** result;
-  __asm__("mv %0, tp" : "=r"(result));
-  return result;
-}
-
 static inline void __set_tls(void* tls) {
   __asm__("mv tp, %0" : : "r"(tls));
 }
 
 #elif defined(__x86_64__)
-
-static inline void** __get_tls(void) {
-  void** result;
-  __asm__("mov %%fs:0, %0" : "=r"(result));
-  return result;
-}
 
 // ARCH_SET_FS is not exposed via <sys/prctl.h> or <linux/prctl.h>.
 #include <asm/prctl.h>
@@ -103,5 +82,7 @@ static inline int __set_tls(void* tls) {
 #else
 #error unsupported architecture
 #endif
+
+#include "tls_internal.h"
 
 #include "tls_defines.h"

@@ -31,5 +31,5 @@
 #include "bionic/tls.h"
 
 inline uintptr_t* _Nonnull getPlatformAllocatorTlsSlot() {
-  return reinterpret_cast<uintptr_t*>(&__get_tls()[TLS_SLOT_SANITIZER]);
+  return reinterpret_cast<uintptr_t*>(&__get_tls_hooks()[TLS_SLOT_SANITIZER]);
 }

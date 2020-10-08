@@ -223,16 +223,16 @@ __LIBC_HIDDEN__ void* __allocate_stack_mte_ringbuffer(size_t n, pthread_internal
 #endif
 
 static inline __always_inline bionic_tcb* __get_bionic_tcb() {
-  return reinterpret_cast<bionic_tcb*>(&__get_tls()[MIN_TLS_SLOT]);
+  return reinterpret_cast<bionic_tcb*>(&__get_tls_hooks()[MIN_TLS_SLOT]);
 }
 
 // Make __get_thread() inlined for performance reason. See http://b/19825434.
 static inline __always_inline pthread_internal_t* __get_thread() {
-  return static_cast<pthread_internal_t*>(__get_tls()[TLS_SLOT_THREAD_ID]);
+  return static_cast<pthread_internal_t*>(__get_tls_hooks()[TLS_SLOT_THREAD_ID]);
 }
 
 static inline __always_inline bionic_tls& __get_bionic_tls() {
-  return *static_cast<bionic_tls*>(__get_tls()[TLS_SLOT_BIONIC_TLS]);
+  return *static_cast<bionic_tls*>(__get_tls_hooks()[TLS_SLOT_BIONIC_TLS]);
 }
 
 static inline __always_inline TlsDtv* __get_tcb_dtv(bionic_tcb* tcb) {

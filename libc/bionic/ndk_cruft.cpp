@@ -66,6 +66,13 @@
 
 extern "C" {
 
+// TODO: does anything still need this?
+// with hybris we need it, so thanks for keeping it.
+void** __get_tls() {
+#include "platform/bionic/tls_internal.h"
+    return __get_tls_internal();
+}
+
 // By the time any NDK-built code is running, there are plenty of threads.
 int __isthreaded = 1;
 
@@ -85,10 +92,7 @@ int __open() {
   abort();
 }
 
-// TODO: does anything still need this?
-void** __get_tls() {
-  return __real_get_tls();
-}
+
 
 // This non-standard function was in our <string.h> for some reason.
 void memswap(void* m1, void* m2, size_t n) {

@@ -40,6 +40,7 @@ LIBC {
     __fsetlocking; # introduced=23
     __fstatfs64; # arm x86
     __fwritable; # introduced=23
+    __get_tls_hooks; # arm arm64 x86 introduced=21
     __get_h_errno;
     __getcpu; # arm x86
     __getcwd; # arm x86
