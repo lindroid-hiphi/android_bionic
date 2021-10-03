@@ -126,7 +126,9 @@ static FdEntry* GetFdEntry(int fd) {
     return nullptr;
   }
 
-  return GetFdTable().at(fd);
+  // Disabled in Halium for now
+  // return GetFdTable().at(fd);
+  return nullptr;
 }
 
 __printflike(1, 0) static void fdsan_error(const char* fmt, ...) {
@@ -246,11 +248,11 @@ int android_fdsan_close_with_tag(int fd, uint64_t expected_tag) {
     return __close(fd);
   }
 
-  FDTRACK_CLOSE(fd);
   FdEntry* fde = GetFdEntry(fd);
   if (!fde) {
     return __close(fd);
   }
+  FDTRACK_CLOSE(fd);
 
   uint64_t tag = expected_tag;
   if (!atomic_compare_exchange_strong(&fde->close_tag, &tag, 0)) {
