@@ -114,7 +114,9 @@ prop_area* prop_area::map_fd_ro(const int fd) {
     return nullptr;
   }
 
-  if ((fd_stat.st_uid != 0) || (fd_stat.st_gid != 0) ||
+  // Halium: allow file to be owned by nobody (65534) user/group for unprivileged containers
+  if ((fd_stat.st_uid != 0 && fd_stat.st_uid != 65534) ||
+      (fd_stat.st_gid != 0 && fd_stat.st_gid != 65534) ||
       ((fd_stat.st_mode & (S_IWGRP | S_IWOTH)) != 0) ||
       (fd_stat.st_size < static_cast<off_t>(sizeof(prop_area)))) {
     return nullptr;
