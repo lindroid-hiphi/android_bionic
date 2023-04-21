@@ -55,6 +55,7 @@
 #include "bionic/malloc_common_dynamic.h"
 #endif  // LIBC_STATIC
 
+#ifdef DISABLED_FOR_HYBRIS_SUPPORT
 static gwp_asan::GuardedPoolAllocator GuardedAlloc;
 static const MallocDispatch* prev_dispatch;
 
@@ -506,6 +507,24 @@ bool MaybeInitGwpAsanFromLibc(libc_globals* globals) {
 bool DispatchIsGwpAsan(const MallocDispatch* dispatch) {
   return dispatch == &gwp_asan_dispatch;
 }
+
+#else // DISABLED_FOR_HYBRIS_SUPPORT
+
+bool MaybeInitGwpAsanFromLibc(libc_globals* /*globals*/) {
+  return false;
+}
+
+bool MaybeInitGwpAsan(libc_globals* /*globals*/, const android_mallopt_gwp_asan_options_t& /*force_init*/) {
+  return false;
+}
+
+bool DispatchIsGwpAsan(const MallocDispatch* /*dispatch*/) {
+  return false;
+}
+
+bool GwpAsanInitialized = false;
+
+#endif // DISABLED_FOR_HYBRIS_SUPPORT
 
 bool EnableGwpAsan(const android_mallopt_gwp_asan_options_t& options) {
   if (GwpAsanInitialized) {
