@@ -30,6 +30,7 @@
 
 #include <pthread.h>
 #include <stdatomic.h>
+#include <sys/mman.h>
 
 #if __has_feature(hwaddress_sanitizer)
 #include <sanitizer/hwasan_interface.h>
@@ -228,11 +229,27 @@ static inline __always_inline bionic_tcb* __get_bionic_tcb() {
 
 // Make __get_thread() inlined for performance reason. See http://b/19825434.
 static inline __always_inline pthread_internal_t* __get_thread() {
-  return static_cast<pthread_internal_t*>(__get_tls_hooks()[TLS_SLOT_THREAD_ID]);
+  void** tls = __get_tls_hooks();
+  pthread_internal_t* thread = static_cast<pthread_internal_t*>(tls[TLS_SLOT_THREAD_ID]);
+  if (__predict_false(thread == nullptr && tls != __get_tls_internal())) {
+    thread = static_cast<pthread_internal_t*>(
+        mmap(nullptr, sizeof(pthread_internal_t), PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    tls[TLS_SLOT_THREAD_ID] = thread;
+  }
+  return thread;
 }
 
 static inline __always_inline bionic_tls& __get_bionic_tls() {
-  return *static_cast<bionic_tls*>(__get_tls_hooks()[TLS_SLOT_BIONIC_TLS]);
+  void** tls = __get_tls_hooks();
+  bionic_tls* b_tls = static_cast<bionic_tls*>(tls[TLS_SLOT_BIONIC_TLS]);
+  if (__predict_false(b_tls == nullptr)) {
+    b_tls = static_cast<bionic_tls*>(
+        mmap(nullptr, sizeof(bionic_tls), PROT_READ | PROT_WRITE,
+             MAP_PRIVATE | MAP_ANONYMOUS, -1, 0));
+    tls[TLS_SLOT_BIONIC_TLS] = b_tls;
+  }
+  return *b_tls;
 }
 
 static inline __always_inline TlsDtv* __get_tcb_dtv(bionic_tcb* tcb) {

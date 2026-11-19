@@ -40,6 +40,7 @@ LIBC {
     __fsetlocking; # introduced=23
     __fstatfs64; # arm x86
     __fwritable; # introduced=23
+    __get_tls; # arm arm64 x86 introduced=21
     __get_tls_hooks; # arm arm64 x86 introduced=21
     __get_h_errno;
     __getcpu; # arm x86
@@ -1736,7 +1737,6 @@ LIBC_PRIVATE {
     __gedf2; # arm
     __gesf2; # arm
     __get_thread; # arm x86
-    __get_tls; # arm x86
     __getdents64; # arm x86
     __gnu_ldivmod_helper; # arm
     __gnu_uldivmod_helper; # arm
